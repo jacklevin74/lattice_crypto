@@ -1,4 +1,4 @@
-# Lattice-Rust: A Simulation of Lattice Shortest Vector Computation Using Commit-Reveal Scheme
+# Lattice-Rust: A Simulation of Lattice Shortest Vector Computation Using Commit-Reveal Scheme For Post Quantum World
 
 ## Overview
 
