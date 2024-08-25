@@ -3,6 +3,7 @@ import { Program } from "@coral-xyz/anchor";
 import { LatticeRust } from "../target/types/lattice_rust";
 import { BN } from "bn.js";
 import * as crypto from "crypto";
+import { exec } from "child_process"; // Node.js child_process module
 
 describe("lattice-rust", () => {
   anchor.setProvider(anchor.AnchorProvider.env());
@@ -71,11 +72,24 @@ describe("lattice-rust", () => {
 
       console.log(`Player ${i + 1} revealed with transaction signature: ${revealTx}`);
 
-      // Fetch and display the logs for this transaction
-      const txDetails = await anchor.getProvider().connection.getConfirmedTransaction(revealTx, "confirmed");
-      if (txDetails?.meta?.logMessages) {
-        console.log("Program Logs:");
-        txDetails.meta.logMessages.forEach(log => console.log(log));
+      // For the last player, fetch the logs using solana confirm after 2 seconds delay
+      if (i === 9) {
+        console.log("Fetching program logs for Player 10...");
+
+        setTimeout(() => {
+          exec(`solana confirm -v ${revealTx} | grep "Program log"`, (error, stdout, stderr) => {
+            if (error) {
+              console.error(`Error fetching logs: ${error.message}`);
+              return;
+            }
+            if (stderr) {
+              console.error(`Error in stderr: ${stderr}`);
+              return;
+            }
+            console.log("Program Logs:");
+            console.log(stdout);
+          });
+        }, 2000); // Wait for 2 seconds before running the command
       }
     }
   });
